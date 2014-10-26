@@ -33,15 +33,15 @@ data = loadURL(product)
 
 # Print product title 
 product_title = data.find('class="fk-product-title"')
-print (details(product_title, product))
+print "Title:    %s" % (details(product_title, product))
 
 # Print product sub title
 product_sub_title = data.find('class="fk-product-subtitle"')
-print (details(product_sub_title, product))
+print "Sub Tile: %s" % (details(product_sub_title, product))
 
 # Print product price
 price_slice = data.find('class="fk-product-price "')
-print (details(price_slice, product))
+print "Price:    %s" % (details(price_slice, product))
 
 # Print the product link
 product_link = data.find('class="fk-product-link"')
@@ -49,7 +49,7 @@ data = loadURL(product)
 str1 = data[(product_link+32):(product_link + 1000)]
 stop = str1.find('"')
 link = data[(product_link + 31):((product_link + 32) + stop)]
-print "https://www.flipkart.com%s" % link
+print "Link:     https://www.flipkart.com%s" % link
 
 
 #####################################################################
