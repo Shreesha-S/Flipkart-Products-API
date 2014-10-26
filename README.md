@@ -13,7 +13,7 @@ The information that can be retrieved include:
 
 ## Instructions:
 * Clone this repository
-* Run '$ python Flipkart-Products-API.py'
+* Run `$ python Flipkart-Products-API.py`
 * Enter the name of the product you want information about
 
 It works fine with Python 2.x versions, but may not work well with Python 3.x versions. 
