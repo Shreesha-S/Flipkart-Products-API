@@ -1,60 +1,50 @@
-########################################
-#     				       #
-#	Flipkart Products API	       #
-#	     Version 1.0     	       #
-#				       #
-#       Developer: Shreesha.S	       #
-#  Contact: shreesha.suresh@gmail.com  #
-#				       #
-########################################
+########################################################
+#     	 			                       #
+#	        Flipkart Products API	               #
+#	             Version 2.0     	               #
+#	    		 		               #
+#               Developer: Shreesha.S	               #
+#          Contact: shreesha.suresh@gmail.com	       #
+#				                       #
+########################################################
 
 
 # Running this script returns the product details of the best matched product on flipkart based on the input string given
+# Make sure you have BeautifulSoup 4 installed already
 
+from bs4 import BeautifulSoup
 import urllib2
 
-# Returns the details after slicing
-def details(count, product):
-	data = loadURL(product)
-	str1 = data[count:(count + 500)]
-	detail_start = str1.find(">") + 1
-	detail_end = str1.find("<")
-	return str1[detail_start:detail_end]	
-
-# Loads the page source of the URL
-def loadURL(product):
-	req = urllib2.urlopen('http://www.flipkart.com/ph/search/pr?q='+product+'&otracker=start&fromAS=false&showAS=false&_submit=').read()
-	return req
-
-# Takes the product name / search query as input
+# Get the product search query from user and parse the page source of the search result from flipkart website
 product = raw_input("Enter product name: ")
 product = product.replace(' ', '+')
-data = loadURL(product)
+content = urllib2.urlopen('http://www.flipkart.com/ph/search/pr?q='+product+'&otracker=start&fromAS=false&showAS=false&_submit=').read()
+soup = BeautifulSoup(content)
 
-# Print product title 
-product_title = data.find('class="fk-product-title"')
-print "Title:    %s" % (details(product_title, product))
-
-# Print product sub title
-product_sub_title = data.find('class="fk-product-subtitle"')
-print "Sub Tile: %s" % (details(product_sub_title, product))
-
-# Print product price
-price_slice = data.find('class="fk-product-price "')
-print "Price:    %s" % (details(price_slice, product))
-
-# Print the product link
-product_link = data.find('class="fk-product-link"')
-data = loadURL(product)
-str1 = data[(product_link+32):(product_link + 1000)]
-stop = str1.find('"')
-link = data[(product_link + 31):((product_link + 32) + stop)]
-print "Link:     https://www.flipkart.com%s" % link
+# Parse the page source of the matched product and find the seller-name 
+link = "https://www.flipkart.com%s" % soup.find_all("a", class_="fk-product-link")[0].get('href')	
+seller_info = urllib2.urlopen(link).read()
+link_soup = BeautifulSoup(seller_info)
 
 
-#####################################################################
-#								    #
-#  There might be some data lost while retrieving the information.  #
-#  In those cases please try retrieving the information again.	    #
-#								    #
-#####################################################################
+try:
+	print "Title:    %s" % soup.find_all("span", class_="fk-product-title")[0].string.strip()
+except:
+	print "Product not found"	
+
+try:	
+	print "Subtitle: %s" % soup.find_all("span", class_="fk-product-subtitle")[0].string.strip()
+except:
+	print "Subtitle: None"
+
+try:
+	print "Price:    %s" % soup.find_all("span", class_="fk-product-price")[0].string.strip()	
+except:
+	pass
+
+print "Link:     %s" % link	
+
+try:
+	print "Seller:   %s" % link_soup.find_all("a", class_="seller-name")[0].string.strip()	
+except:
+	pass
