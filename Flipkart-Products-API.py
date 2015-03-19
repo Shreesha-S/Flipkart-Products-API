@@ -1,11 +1,11 @@
 ########################################################
-#     	 			                       #
-#	        Flipkart Products API	               #
-#	             Version 2.0     	               #
-#	    		 		               #
-#               Developer: Shreesha.S	               #
+#     	 			                                   #
+#	             Flipkart Products API	               #
+#	                  Version 2.0     	               #
+#	    		 	                	               #
+#                Developer: Shreesha.S	               #
 #          Contact: shreesha.suresh@gmail.com	       #
-#				                       #
+#				                                       #
 ########################################################
 
 
@@ -18,33 +18,40 @@ import urllib2
 # Get the product search query from user and parse the page source of the search result from flipkart website
 product = raw_input("Enter product name: ")
 product = product.replace(' ', '+')
-content = urllib2.urlopen('http://www.flipkart.com/ph/search/pr?q='+product+'&otracker=start&fromAS=false&showAS=false&_submit=').read()
+content = urllib2.urlopen('http://www.flipkart.com/search?otracker=start&q='+product).read()
+
 soup = BeautifulSoup(content)
 
 # Parse the page source of the matched product and find the seller-name 
-link = "https://www.flipkart.com%s" % soup.find_all("a", class_="fk-product-link")[0].get('href')	
+link = soup.find_all("div", class_="pu-title fk-font-13")[0].find_all('a')[0].get('href')
+link = "https://www.flipkart.com%s" % link
+
 seller_info = urllib2.urlopen(link).read()
 link_soup = BeautifulSoup(seller_info)
 
+try:
+    title = link_soup.find_all("h1", class_="title")[0].string.strip()
+    print "Title:    %s" % title
+except:
+    print "Product not found"	
 
 try:
-	print "Title:    %s" % soup.find_all("span", class_="fk-product-title")[0].string.strip()
+    subtitle = link_soup.find_all("span", class_="subtitle")[0].string.strip()
+    print "Subtitle: %s" % subtitle
 except:
-	print "Product not found"	
-
-try:	
-	print "Subtitle: %s" % soup.find_all("span", class_="fk-product-subtitle")[0].string.strip()
-except:
-	print "Subtitle: None"
+    print "Subtitle: None"
 
 try:
-	print "Price:    %s" % soup.find_all("span", class_="fk-product-price")[0].string.strip()	
+    price = link_soup.find_all("span", class_="selling-price omniture-field")[0].string.strip()
+    print "Price:    %s" % 	price
 except:
-	pass
+    pass
 
 print "Link:     %s" % link	
 
 try:
-	print "Seller:   %s" % link_soup.find_all("a", class_="seller-name")[0].string.strip()	
+    seller = link_soup.find_all("a", class_="seller-name")[0].string.strip()
+    print "Seller:   %s" % seller
 except:
-	pass
+    pass
+
